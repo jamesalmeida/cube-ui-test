@@ -41,7 +41,6 @@ const CubeScreen: React.FC = () => {
             swipeThreshold={50} // Adjust swipe sensitivity if needed
             expandView={true}
             loop={false}
-            scrollLockPage={null}
           >
             {/* Left face - Settings & API Keys */}
             <View style={[styles.face, styles.leftFace]}>
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   frontFace: {
-    backgroundColor: '#007AFF', // Bright blue
+    backgroundColor: 'grey', // Bright blue
   },
   leftFace: {
     backgroundColor: '#4CAF50', // Green

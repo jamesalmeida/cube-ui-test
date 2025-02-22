@@ -8,9 +8,11 @@ import {
   Platform,
   Text,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { sendMessageToGrok } from '../services/grokApi';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Message {
   id: string;
@@ -24,6 +26,8 @@ export const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
+  const [isInputVisible, setIsInputVisible] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
   const sendMessage = async () => {
     if (!inputText.trim() || isLoading) return;
@@ -58,6 +62,18 @@ export const ChatInterface = () => {
     }
   };
 
+  const showInput = () => {
+    setIsInputVisible(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const hideInput = () => {
+    setIsInputVisible(false);
+    inputRef.current?.blur();
+  };
+
   const renderMessage = ({ item }: { item: Message }) => (
     <View style={[
       styles.messageBubble,
@@ -90,28 +106,35 @@ export const ChatInterface = () => {
           flatListRef.current?.scrollToEnd({ animated: true });
         }}
       />
-      <View style={styles.inputWrapper}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={[
-              styles.input,
-              isLoading && styles.inputDisabled
-            ]}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder={isLoading ? "Chronicler is typing..." : "Type your response..."}
-            returnKeyType="send"
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              if (inputText.trim()) {
-                sendMessage();
-              }
-            }}
-            multiline={false}
-            editable={!isLoading}
-          />
+      {isInputVisible && (
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              ref={inputRef}
+              style={[
+                styles.input,
+                isLoading && styles.inputDisabled
+              ]}
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder={isLoading ? "Chronicler is typing..." : "Type your response..."}
+              returnKeyType="send"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                if (inputText.trim()) {
+                  sendMessage();
+                }
+              }}
+              onBlur={hideInput}
+              multiline={false}
+              editable={!isLoading}
+            />
+          </View>
         </View>
-      </View>
+      )}
+      <TouchableOpacity style={styles.floatingButton} onPress={showInput}>
+        <Ionicons name="add" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
@@ -163,5 +186,17 @@ const styles = StyleSheet.create({
   },
   inputDisabled: {
     opacity: 0.7,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 90,
+    right: 30,
+    width: 60,
+    height: 60,
+    backgroundColor: 'red',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
   },
 }); 

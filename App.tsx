@@ -8,6 +8,7 @@ import CubeScreen from './src/CubeScreen';
 LogBox.ignoreLogs([
   'Animated.event now requires a second argument for options',
   'Animated: `useNativeDriver` was not specified',
+  '(NOBRIDGE) WARN  Animated.event now requires a second argument for options',
 ]);
 
 const Stack = createStackNavigator();
