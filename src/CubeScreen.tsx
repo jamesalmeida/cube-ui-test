@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, Text, SafeAreaView, Platform } from 'react-native';
 import { CubeNavigationHorizontal } from 'react-native-3dcube-navigation';
+import { ChatInterface } from './components/ChatInterface';
+import { ApiKeyInput } from './components/ApiKeyInput';
 
 const CubeScreen: React.FC = () => {
   const [currentFace, setCurrentFace] = useState('front'); // Default to Front (index 1)
@@ -25,32 +27,52 @@ const CubeScreen: React.FC = () => {
   };
 
   // Order the faces to match 3D cube layout:
-  // - Index 0: Front (main story)
-  // - Index 1: Left (settings, to the left of front)
+  // - Index 0: Left (settings, to the left of front)
+  // - Index 1: Front (main story)
   // - Index 2: Right (inventory, to the right of front)
   return (
-    <View style={styles.container}>
-      <CubeNavigationHorizontal
-        ref={cubeRef}
-        callBackAfterSwipe={handleSwipe}
-        // Optional props to customize animation or speed if needed
-        swipeThreshold={50} // Adjust swipe sensitivity if needed
-      >
-        <View style={[styles.face, styles.frontFace]}>
-          <Text style={styles.faceText}>Left Face - Settings</Text>
+    <View style={styles.mainContainer}>
+      <SafeAreaView style={[styles.safeArea, styles.frontFace]}>
+        <View style={styles.container}>
+          <CubeNavigationHorizontal
+            ref={cubeRef}
+            callBackAfterSwipe={handleSwipe}
+            // Optional props to customize animation or speed if needed
+            swipeThreshold={50} // Adjust swipe sensitivity if needed
+            expandView={true}
+            loop={false}
+            scrollLockPage={null}
+          >
+            {/* Left face - Settings & API Keys */}
+            <View style={[styles.face, styles.leftFace]}>
+              <ApiKeyInput />
+            </View>
+
+            {/* Front face - Chat Interface - Default View on Startup */}
+            <View style={[styles.face, styles.frontFace]}>
+              <ChatInterface />
+            </View>
+
+            {/* Right face - Inventory and Game extra game UI (placeholder) */}
+            <View style={[styles.face, styles.rightFace]}>
+              <Text style={styles.faceText}>Right Face - Inventory</Text>
+            </View>
+          </CubeNavigationHorizontal>
         </View>
-        <View style={[styles.face, styles.leftFace]}>
-          <Text style={styles.faceText}>Front Face - Main Story</Text>
-        </View>
-        <View style={[styles.face, styles.rightFace]}>
-          <Text style={styles.faceText}>Right Face - Inventory</Text>
-        </View>
-      </CubeNavigationHorizontal>
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#007AFF', // Match the front face color
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? 25 : 0, // Additional padding for Android
+  },
   container: {
     flex: 1,
   },
